@@ -2,6 +2,7 @@ const fileInput = document.getElementById("fileInput");
 const preview = document.getElementById("preview");
 const processBtn = document.getElementById("processBtn");
 const timerEl = document.getElementById("timer");
+const statusEl = document.getElementById("status");
 const resultsEl = document.getElementById("results");
 
 let selectedFile = null;
@@ -33,6 +34,7 @@ processBtn.addEventListener("click", async () => {
   formData.append("image", selectedFile);
 
   startTimer();
+  statusEl.innerText = "서버 상태: 업로드 중...";
 
   try {
     const response = await fetch(`${API_URL}/inference`, {
@@ -48,9 +50,17 @@ processBtn.addEventListener("click", async () => {
     const data = await response.json();
     stopTimer();
 
+    if (!data.images || data.images.length === 0) {
+      statusEl.innerText = "서버 상태: 결과 없음";
+      resultsEl.innerHTML = "<p>Inference 결과가 없습니다.</p>";
+      return;
+    }
+
+    statusEl.innerText = `서버 상태: 완료 (job_id=${data.job_id})`;
     showResults(data.images);
   } catch (e) {
     stopTimer();
+    statusEl.innerText = "서버 상태: 오류";
     alert(`Server error: ${e.message}`);
   }
 });
@@ -68,6 +78,13 @@ function stopTimer() {
   clearInterval(timerInterval);
 }
 
+function toDataUrl(image) {
+  if (image.data) {
+    return `data:${image.mime_type};base64,${image.data}`;
+  }
+  return image.url || "";
+}
+
 // 4️⃣ 결과 이미지 표시 + 다운로드
 function showResults(images) {
   resultsEl.innerHTML = "";
@@ -77,13 +94,18 @@ function showResults(images) {
     div.className = "result-item";
 
     const img = document.createElement("img");
-    img.src = imgData.url;
+    img.src = toDataUrl(imgData);
+    img.alt = imgData.name || `result_${idx}`;
 
     const a = document.createElement("a");
-    a.href = imgData.url;
-    a.download = `result_${idx}.png`;
+    a.href = toDataUrl(imgData);
+    a.download = imgData.name || `result_${idx}.png`;
     a.innerText = "Download";
 
+    const label = document.createElement("p");
+    label.innerText = imgData.name || `Result ${idx + 1}`;
+
+    div.appendChild(label);
     div.appendChild(img);
     div.appendChild(document.createElement("br"));
     div.appendChild(a);
