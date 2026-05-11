@@ -2,6 +2,7 @@ const fileInput = document.getElementById("fileInput");
 const preview = document.getElementById("preview");
 const processBtn = document.getElementById("processBtn");
 const timerEl = document.getElementById("timer");
+const statusEl = document.getElementById("status");
 const resultsEl = document.getElementById("results");
 
 let selectedFile = null;
@@ -12,6 +13,7 @@ let startTime = null;
 fileInput.addEventListener("change", () => {
   preview.innerHTML = "";
   resultsEl.innerHTML = "";
+  statusEl.innerText = "서버 상태: 이미지 선택 완료"
 
   selectedFile = fileInput.files[0];
   if (!selectedFile) return;
@@ -23,32 +25,47 @@ fileInput.addEventListener("change", () => {
   processBtn.disabled = false;
 });
 
+const API_URL = "http://aiserv.sky.4pple.co.kr:38000"; // Pi 백엔드 주소
+
+async function sendInferenceRequest(file) {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const response = await fetch(`${API_URL}/inference`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => null);
+    throw new Error(error?.error || "Inference request failed");
+  }
+
+  return response.json();
+}
+
 // 2️⃣ Process 버튼
 processBtn.addEventListener("click", async () => {
   if (!selectedFile) return;
 
-  const formData = new FormData();
-  formData.append("image", selectedFile);
+  processBtn.disabled = true;
+  statusEl.innerText = "서버 상태: 업로드 중...";
+  resultsEl.innerHTML = "";
 
   startTimer();
 
   try {
-    const response = await fetch("https://YOUR_SERVER_URL/inference", {
-      method: "POST",
-      headers: {
-        // 예: 서버에서 GitHub OAuth token 검사
-        // "Authorization": "Bearer xxx"
-      },
-      body: formData
-    });
-
-    const data = await response.json();
+    const data = await sendInferenceRequest(selectedFile);
     stopTimer();
 
+    statusEl.innerText = `서버 상태: 완료 (job_id=${data.job_id})`;
     showResults(data.images);
   } catch (e) {
     stopTimer();
-    alert("Server error");
+    statusEl.innerText = "서버 상태: 오류";
+    alert(`Server error: ${e.message}`);
+  } finally {
+    processBtn.disabled = false;
   }
 });
 
