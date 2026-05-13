@@ -97,13 +97,14 @@ function showResults(images) {
     img.src = toDataUrl(imgData);
     img.alt = imgData.name || `result_${idx}`;
 
+    const filename = imgData.name ? imgData.name.split("/").pop() : `result_${idx}.png`;
     const a = document.createElement("a");
     a.href = toDataUrl(imgData);
-    a.download = imgData.name || `result_${idx}.png`;
+    a.download = filename;
     a.innerText = "Download";
 
     const label = document.createElement("p");
-    label.innerText = imgData.name || `Result ${idx + 1}`;
+    label.innerText = filename;
 
     div.appendChild(label);
     div.appendChild(img);
