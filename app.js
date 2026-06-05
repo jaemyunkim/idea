@@ -5,6 +5,9 @@ const timerEl = document.getElementById("timer");
 const statusEl = document.getElementById("status");
 const versionEl = document.getElementById("version");
 const resultsEl = document.getElementById("results");
+const allDownloadBtn = document.getElementById("allDownloadBtn");
+
+let currentImages = [];
 
 let selectedFile = null;
 let timerInterval = null;
@@ -31,7 +34,8 @@ const VERSION_FILE = "version.txt";
 fetch(VERSION_FILE)
   .then((response) => response.text())
   .then((text) => {
-    versionEl.innerText = `Version: ${text.trim()}`;
+    const version = text.split("\n").find((l) => l.trim() && !l.startsWith("#"))?.trim() ?? "unknown";
+    versionEl.innerText = `Version: ${version}`;
   })
   .catch(() => {
     versionEl.innerText = "Version: unknown";
@@ -64,11 +68,14 @@ processBtn.addEventListener("click", async () => {
     if (!data.images || data.images.length === 0) {
       statusEl.innerText = "서버 상태: 결과 없음";
       resultsEl.innerHTML = "<p>Inference 결과가 없습니다.</p>";
+      allDownloadBtn.style.display = "none";
       return;
     }
 
     statusEl.innerText = `서버 상태: 완료 (job_id=${data.job_id})`;
+    currentImages = data.images;
     showResults(data.images);
+    allDownloadBtn.style.display = "inline";
   } catch (e) {
     stopTimer();
     statusEl.innerText = "서버 상태: 오류";
@@ -109,15 +116,13 @@ function showResults(images) {
     img.alt = imgData.name || `result_${idx}`;
 
     const filename = imgData.name ? imgData.name.split("/").pop() : `result_${idx}.png`;
+    const nameWithoutExt = filename.replace(/\.[^/.]+$/, "");
+
     const a = document.createElement("a");
     a.href = toDataUrl(imgData);
     a.download = filename;
-    a.innerText = "Download";
+    a.innerText = nameWithoutExt;
 
-    const label = document.createElement("p");
-    label.innerText = filename;
-
-    div.appendChild(label);
     div.appendChild(img);
     div.appendChild(document.createElement("br"));
     div.appendChild(a);
@@ -125,3 +130,14 @@ function showResults(images) {
     resultsEl.appendChild(div);
   });
 }
+
+allDownloadBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  currentImages.forEach((imgData, idx) => {
+    const filename = imgData.name ? imgData.name.split("/").pop() : `result_${idx}.png`;
+    const a = document.createElement("a");
+    a.href = toDataUrl(imgData);
+    a.download = filename;
+    a.click();
+  });
+});
