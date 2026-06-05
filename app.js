@@ -3,6 +3,7 @@ const preview = document.getElementById("preview");
 const processBtn = document.getElementById("processBtn");
 const timerEl = document.getElementById("timer");
 const statusEl = document.getElementById("status");
+const versionEl = document.getElementById("version");
 const resultsEl = document.getElementById("results");
 
 let selectedFile = null;
@@ -24,7 +25,17 @@ fileInput.addEventListener("change", () => {
   processBtn.disabled = false;
 });
 
-const API_URL = "https://aiserv.sky.4pple.co.kr:38000"; // 서버 URL을 실제 도메인 또는 IP로 변경하세요.
+const API_URL = "https://aiserv.sky.4pple.net"; // GitHub Pages에서 실제 원격 백엔드를 호출합니다.
+const VERSION_FILE = "version.txt";
+
+fetch(VERSION_FILE)
+  .then((response) => response.text())
+  .then((text) => {
+    versionEl.innerText = `Version: ${text.trim()}`;
+  })
+  .catch(() => {
+    versionEl.innerText = "Version: unknown";
+  });
 
 // 2️⃣ Process 버튼
 processBtn.addEventListener("click", async () => {

@@ -10,6 +10,13 @@ body {
   border: 1px solid #ccc;
 }
 
+.version-text {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: -10px;
+  margin-bottom: 20px;
+}
+
 .result-item {
   display: inline-block;
   text-align: center;
