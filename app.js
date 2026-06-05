@@ -134,10 +134,13 @@ function toDataUrl(image) {
 }
 
 const RESULT_LABELS = ["sketch layer", "color layer", "highlight layer", "shadow layer", "result"];
+const RESULT_ORDER = [3, 0, 1, 2, 4]; // color, highlight, shadow, sketch, merge → sketch, color, highlight, shadow, result
 
 // 4️⃣ 결과 이미지 표시 + 다운로드
 function showResults(images) {
   resultsEl.innerHTML = "";
+  const ordered = RESULT_ORDER.map((i) => images[i] ?? null).filter(Boolean);
+  images = ordered.length === images.length ? ordered : images;
 
   images.forEach((imgData, idx) => {
     const div = document.createElement("div");

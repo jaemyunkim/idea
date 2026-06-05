@@ -1,2 +1,2 @@
 # CalVer: YYYY.WW.Patch
-2026.23.0
+2026.23.1
