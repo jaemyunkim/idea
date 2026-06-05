@@ -1,3 +1,33 @@
+// Auth
+const PASSWORD_HASH = "6689388cef2a1e70d61dadf8db5897af1f9e2491bffdfc4390736bb4d397572e";
+
+async function sha256(text) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function tryLogin() {
+  const input = document.getElementById("passwordInput").value;
+  const hash = await sha256(input);
+  if (hash === PASSWORD_HASH) {
+    sessionStorage.setItem("auth", "1");
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("mainContent").style.display = "block";
+  } else {
+    document.getElementById("loginError").style.display = "block";
+  }
+}
+
+if (sessionStorage.getItem("auth") === "1") {
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("mainContent").style.display = "block";
+}
+
+document.getElementById("loginBtn").addEventListener("click", tryLogin);
+document.getElementById("passwordInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") tryLogin();
+});
+
 const fileInput = document.getElementById("fileInput");
 const preview = document.getElementById("preview");
 const processBtn = document.getElementById("processBtn");
@@ -131,13 +161,17 @@ function showResults(images) {
   });
 }
 
-allDownloadBtn.addEventListener("click", (e) => {
+allDownloadBtn.addEventListener("click", async (e) => {
   e.preventDefault();
+  const zip = new JSZip();
   currentImages.forEach((imgData, idx) => {
     const filename = imgData.name ? imgData.name.split("/").pop() : `result_${idx}.png`;
-    const a = document.createElement("a");
-    a.href = toDataUrl(imgData);
-    a.download = filename;
-    a.click();
+    zip.file(filename, imgData.data, { base64: true });
   });
+  const blob = await zip.generateAsync({ type: "blob" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "results.zip";
+  a.click();
+  URL.revokeObjectURL(a.href);
 });

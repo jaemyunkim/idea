@@ -3,6 +3,27 @@ body {
   padding: 20px;
 }
 
+#loginScreen {
+  max-width: 320px;
+  margin: 100px auto;
+  text-align: center;
+}
+
+#loginScreen input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+#loginScreen button {
+  width: 100%;
+  padding: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
 #preview img,
 #results img {
   max-width: 300px;
