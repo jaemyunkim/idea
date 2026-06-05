@@ -133,6 +133,8 @@ function toDataUrl(image) {
   return image.url || "";
 }
 
+const RESULT_LABELS = ["sketch layer", "color layer", "highlight layer", "shadow layer", "result"];
+
 // 4️⃣ 결과 이미지 표시 + 다운로드
 function showResults(images) {
   resultsEl.innerHTML = "";
@@ -146,12 +148,12 @@ function showResults(images) {
     img.alt = imgData.name || `result_${idx}`;
 
     const filename = imgData.name ? imgData.name.split("/").pop() : `result_${idx}.png`;
-    const nameWithoutExt = filename.replace(/\.[^/.]+$/, "");
+    const label = RESULT_LABELS[idx] ?? filename.replace(/\.[^/.]+$/, "");
 
     const a = document.createElement("a");
     a.href = toDataUrl(imgData);
     a.download = filename;
-    a.innerText = nameWithoutExt;
+    a.innerText = label;
 
     div.appendChild(img);
     div.appendChild(document.createElement("br"));
