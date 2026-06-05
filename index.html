@@ -7,10 +7,23 @@
 </head>
 <body>
   <div id="loginScreen">
-    <h1>Private Inference Test</h1>
-    <input type="password" id="passwordInput" placeholder="암호를 입력하세요" />
-    <button id="loginBtn">확인</button>
-    <p id="loginError" style="color:red; display:none;">암호가 올바르지 않습니다.</p>
+    <div class="center-container">
+      <div class="card-box">
+        <div class="header">
+          <h1 class="main">Welcome to Inference Test</h1>
+          <div class="sub">Please enter your password below.</div>
+        </div>
+        <div class="content">
+          <div class="login-form">
+            <div class="field">
+              <input id="passwordInput" class="password" type="password" placeholder="Password" autofocus autocomplete="current-password" />
+              <button id="loginBtn" class="-button submit">Submit</button>
+            </div>
+            <p id="loginError" class="error" style="display:none;">Incorrect password.</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div id="mainContent" style="display:none;">
