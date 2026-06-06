@@ -121,6 +121,17 @@ body {
   margin-top: 16px;
 }
 
+#fileInput,
+#processBtn {
+  display: block;
+  margin-bottom: 8px;
+}
+
+#timer,
+#status {
+  margin: 0;
+}
+
 #preview img,
 #results img {
   max-width: 300px;
@@ -153,9 +164,17 @@ body {
   line-height: 1.6;
 }
 
+
+.job-info-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 24px;
+}
+
 .job-info-row {
   display: flex;
-  gap: 12px;
+  gap: 8px;
+  white-space: nowrap;
 }
 
 .job-info-key {

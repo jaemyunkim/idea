@@ -128,20 +128,29 @@ function showJobInfo(data) {
   };
   const total = [t.preprocess, t.inference, t.postprocess].reduce((acc, v) => (v != null ? acc + v : acc), 0);
 
-  const rows = [
-    ["Job ID",      data.job_id ?? "-"],
-    ["Server",      data.version ?? "-"],
-    ["Received",    fmtTime(t.received)],
-    ["Responded",   fmtTime(t.responded)],
-    ["Preprocess",  fmt(t.preprocess)],
-    ["Inference",   fmt(t.inference)],
-    ["Postprocess", fmt(t.postprocess)],
+  const leftRows = [
+    ["Job ID",    data.job_id ?? "-"],
+    ["Version",   data.version ?? "-"],
+    ["Received",  fmtTime(t.received)],
+    ["Responded", fmtTime(t.responded)],
+  ];
+  const rightRows = [
+    ["Preprocess",     fmt(t.preprocess)],
+    ["Inference",      fmt(t.inference)],
+    ["Postprocess",    fmt(t.postprocess)],
     ["Total (server)", fmt(total)],
   ];
 
-  jobInfoEl.innerHTML = rows
-    .map(([k, v]) => `<div class="job-info-row"><span class="job-info-key">${k}</span><span class="job-info-val">${v}</span></div>`)
-    .join("");
+  const renderRow = ([k, v]) =>
+    `<div class="job-info-row"><span class="job-info-key">${k}</span><span class="job-info-val">${v}</span></div>`;
+
+  jobInfoEl.innerHTML =
+    `<div class="job-info">` +
+      `<div class="job-info-cols">` +
+        `<div class="job-info-col">${leftRows.map(renderRow).join("")}</div>` +
+        `<div class="job-info-col">${rightRows.map(renderRow).join("")}</div>` +
+      `</div>` +
+    `</div>`;
   jobInfoEl.style.display = "block";
 }
 
