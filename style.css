@@ -132,7 +132,40 @@ body {
   font-size: 0.9rem;
   color: #666;
   margin-top: -10px;
+  margin-bottom: 4px;
+}
+
+.note-text {
+  font-size: 0.85rem;
+  color: #888;
+  margin-top: 0;
   margin-bottom: 20px;
+}
+
+.job-info {
+  display: inline-block;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 10px 16px;
+  margin: 8px 0 16px;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.job-info-row {
+  display: flex;
+  gap: 12px;
+}
+
+.job-info-key {
+  color: #888;
+  min-width: 110px;
+}
+
+.job-info-val {
+  color: #222;
+  font-family: monospace;
 }
 
 .result-item {

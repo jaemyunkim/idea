@@ -29,6 +29,7 @@
   <div id="mainContent" style="display:none;">
   <h1>Inference Test</h1>
   <p id="version" class="version-text">Version: loading...</p>
+  <p id="note" class="note-text">※ 이미지를 업로드하면 서버로 전송해 inference 결과를 생성합니다. 지원 이미지 크기: 640 x 640</p>
 
   <input type="file" id="fileInput" accept="image/*" />
   <div id="preview"></div>
@@ -37,7 +38,7 @@
 
   <p id="timer">Elapsed: 0.0s</p>
   <p id="status">서버 상태: 대기 중</p>
-  <p id="note">※ 이미지를 업로드하면 서버로 전송해 inference 결과를 생성합니다. 지원 이미지 크기: 640 x 640</p>
+  <div id="jobInfo" style="display:none;" class="job-info"></div>
 
   <h2>Results <a id="allDownloadBtn" href="#" style="display:none; font-size:0.85rem; font-weight:normal;">All Download</a></h2>
   <div id="results"></div>

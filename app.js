@@ -36,6 +36,7 @@ const statusEl = document.getElementById("status");
 const versionEl = document.getElementById("version");
 const resultsEl = document.getElementById("results");
 const allDownloadBtn = document.getElementById("allDownloadBtn");
+const jobInfoEl = document.getElementById("jobInfo");
 
 let currentImages = [];
 
@@ -47,6 +48,8 @@ let startTime = null;
 fileInput.addEventListener("change", () => {
   preview.innerHTML = "";
   resultsEl.innerHTML = "";
+  jobInfoEl.style.display = "none";
+  jobInfoEl.innerHTML = "";
 
   selectedFile = fileInput.files[0];
   if (!selectedFile) return;
@@ -102,7 +105,8 @@ processBtn.addEventListener("click", async () => {
       return;
     }
 
-    statusEl.innerText = `서버 상태: 완료 (job_id=${data.job_id})`;
+    statusEl.innerText = "서버 상태: 완료";
+    showJobInfo(data);
     currentImages = data.images;
     showResults(data.images);
     allDownloadBtn.style.display = "inline";
@@ -113,7 +117,35 @@ processBtn.addEventListener("click", async () => {
   }
 });
 
-// 3️⃣ 타이머
+// 3️⃣ Job 정보 표시
+function showJobInfo(data) {
+  const t = data.time ?? {};
+  const fmt = (ms) => (ms != null ? `${ms} ms` : "-");
+  const fmtTime = (iso) => {
+    if (!iso) return "-";
+    const d = new Date(iso);
+    return d.toLocaleTimeString("ko-KR", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit", fractionalSecondDigits: 3 });
+  };
+  const total = [t.preprocess, t.inference, t.postprocess].reduce((acc, v) => (v != null ? acc + v : acc), 0);
+
+  const rows = [
+    ["Job ID",      data.job_id ?? "-"],
+    ["Server",      data.version ?? "-"],
+    ["Received",    fmtTime(t.received)],
+    ["Responded",   fmtTime(t.responded)],
+    ["Preprocess",  fmt(t.preprocess)],
+    ["Inference",   fmt(t.inference)],
+    ["Postprocess", fmt(t.postprocess)],
+    ["Total (server)", fmt(total)],
+  ];
+
+  jobInfoEl.innerHTML = rows
+    .map(([k, v]) => `<div class="job-info-row"><span class="job-info-key">${k}</span><span class="job-info-val">${v}</span></div>`)
+    .join("");
+  jobInfoEl.style.display = "block";
+}
+
+// 5️⃣ 타이머
 function startTimer() {
   startTime = Date.now();
   timerInterval = setInterval(() => {
@@ -136,7 +168,7 @@ function toDataUrl(image) {
 const RESULT_LABELS = ["sketch layer", "color layer", "highlight layer", "shadow layer", "merged layers"];
 const RESULT_ORDER = [3, 0, 1, 2, 4]; // color, highlight, shadow, sketch, merge → sketch, color, highlight, shadow, result
 
-// 4️⃣ 결과 이미지 표시 + 다운로드
+// 6️⃣ 결과 이미지 표시 + 다운로드
 function showResults(images) {
   resultsEl.innerHTML = "";
   const ordered = RESULT_ORDER.map((i) => images[i] ?? null).filter(Boolean);
