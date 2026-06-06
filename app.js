@@ -59,7 +59,7 @@ fileInput.addEventListener("change", () => {
 });
 
 const API_URL = "https://aiserv.sky.4pple.net"; // GitHub Pages에서 실제 원격 백엔드를 호출합니다.
-const VERSION_FILE = "version.txt";
+const VERSION_FILE = "VERSION";
 
 fetch(VERSION_FILE)
   .then((response) => response.text())

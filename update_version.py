@@ -2,7 +2,7 @@ from datetime import date
 from pathlib import Path
 import re
 
-VERSION_FILE = Path(__file__).resolve().parent / "version.txt"
+VERSION_FILE = Path(__file__).resolve().parent / "VERSION"
 VERSION_PATTERN = re.compile(r"^(\d{4})\.(\d{2})\.(\d+)$")
 
 
