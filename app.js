@@ -21,7 +21,12 @@ async function tryLogin() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ password }),
     });
-    if (!res.ok) { document.getElementById("loginError").style.display = "block"; return; }
+    if (!res.ok) {
+      const errEl = document.getElementById("loginError");
+      errEl.textContent = res.status === 429 ? "Too many attempts. Please wait." : "Incorrect password.";
+      errEl.style.display = "block";
+      return;
+    }
     const { token } = await res.json();
     sessionStorage.setItem("auth_token", token);
     showMain();
