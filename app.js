@@ -35,7 +35,21 @@ async function tryLogin() {
   }
 }
 
-if (sessionStorage.getItem("auth_token")) showMain();
+async function checkSession() {
+  const token = sessionStorage.getItem("auth_token");
+  if (!token) return;
+  try {
+    const res = await fetch(`${API_URL}/auth/verify`, {
+      headers: { "Authorization": `Bearer ${token}` },
+    });
+    if (res.ok) showMain();
+    else sessionStorage.removeItem("auth_token");
+  } catch {
+    sessionStorage.removeItem("auth_token");
+  }
+}
+
+checkSession();
 
 document.getElementById("loginBtn").addEventListener("click", tryLogin);
 document.getElementById("passwordInput").addEventListener("keydown", (e) => {
