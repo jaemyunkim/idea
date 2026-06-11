@@ -141,16 +141,36 @@ function showJobInfo(data) {
     ["Total (server)", fmt(total)],
   ];
 
-  const renderRow = ([k, v]) =>
-    `<div class="job-info-row"><span class="job-info-key">${k}</span><span class="job-info-val">${v}</span></div>`;
+  const makeRow = ([k, v]) => {
+    const row = document.createElement("div");
+    row.className = "job-info-row";
+    const key = document.createElement("span");
+    key.className = "job-info-key";
+    key.textContent = k;
+    const val = document.createElement("span");
+    val.className = "job-info-val";
+    val.textContent = v;
+    row.appendChild(key);
+    row.appendChild(val);
+    return row;
+  };
 
-  jobInfoEl.innerHTML =
-    `<div class="job-info">` +
-      `<div class="job-info-cols">` +
-        `<div class="job-info-col">${leftRows.map(renderRow).join("")}</div>` +
-        `<div class="job-info-col">${rightRows.map(renderRow).join("")}</div>` +
-      `</div>` +
-    `</div>`;
+  const makeCol = (rows) => {
+    const col = document.createElement("div");
+    col.className = "job-info-col";
+    rows.forEach((r) => col.appendChild(makeRow(r)));
+    return col;
+  };
+
+  jobInfoEl.innerHTML = "";
+  const wrapper = document.createElement("div");
+  wrapper.className = "job-info";
+  const cols = document.createElement("div");
+  cols.className = "job-info-cols";
+  cols.appendChild(makeCol(leftRows));
+  cols.appendChild(makeCol(rightRows));
+  wrapper.appendChild(cols);
+  jobInfoEl.appendChild(wrapper);
   jobInfoEl.style.display = "block";
 }
 
