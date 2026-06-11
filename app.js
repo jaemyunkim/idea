@@ -1,27 +1,36 @@
-// Auth
-const PASSWORD_HASH = "6689388cef2a1e70d61dadf8db5897af1f9e2491bffdfc4390736bb4d397572e";
+const API_URL = "https://aiserv.sky.4pple.net";
 
-async function sha256(text) {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
-  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+function showMain() {
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("mainContent").style.display = "block";
+}
+
+function showLogin() {
+  sessionStorage.removeItem("auth_token");
+  document.getElementById("mainContent").style.display = "none";
+  document.getElementById("loginScreen").style.display = "block";
+  document.getElementById("passwordInput").value = "";
 }
 
 async function tryLogin() {
-  const input = document.getElementById("passwordInput").value;
-  const hash = await sha256(input);
-  if (hash === PASSWORD_HASH) {
-    sessionStorage.setItem("auth", "1");
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("mainContent").style.display = "block";
-  } else {
+  const password = document.getElementById("passwordInput").value;
+  document.getElementById("loginError").style.display = "none";
+  try {
+    const res = await fetch(`${API_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
+    if (!res.ok) { document.getElementById("loginError").style.display = "block"; return; }
+    const { token } = await res.json();
+    sessionStorage.setItem("auth_token", token);
+    showMain();
+  } catch {
     document.getElementById("loginError").style.display = "block";
   }
 }
 
-if (sessionStorage.getItem("auth") === "1") {
-  document.getElementById("loginScreen").style.display = "none";
-  document.getElementById("mainContent").style.display = "block";
-}
+if (sessionStorage.getItem("auth_token")) showMain();
 
 document.getElementById("loginBtn").addEventListener("click", tryLogin);
 document.getElementById("passwordInput").addEventListener("keydown", (e) => {
@@ -61,7 +70,6 @@ fileInput.addEventListener("change", () => {
   processBtn.disabled = false;
 });
 
-const API_URL = "https://aiserv.sky.4pple.net"; // GitHub Pages에서 실제 원격 백엔드를 호출합니다.
 const VERSION_FILE = "VERSION";
 
 fetch(VERSION_FILE)
@@ -87,8 +95,15 @@ processBtn.addEventListener("click", async () => {
   try {
     const response = await fetch(`${API_URL}/inference`, {
       method: "POST",
+      headers: { "Authorization": `Bearer ${sessionStorage.getItem("auth_token")}` },
       body: formData,
     });
+
+    if (response.status === 401) {
+      stopTimer();
+      showLogin();
+      return;
+    }
 
     if (!response.ok) {
       const error = await response.json().catch(() => null);
