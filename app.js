@@ -1,20 +1,20 @@
 const API_URL = "https://aiserv.sky.4pple.net";
 
 function showMain() {
-  document.getElementById("loginScreen").style.display = "none";
-  document.getElementById("mainContent").style.display = "block";
+  document.getElementById("loginScreen").classList.add("hidden");
+  document.getElementById("mainContent").classList.remove("hidden");
 }
 
 function showLogin() {
   sessionStorage.removeItem("auth_token");
-  document.getElementById("mainContent").style.display = "none";
-  document.getElementById("loginScreen").style.display = "block";
+  document.getElementById("mainContent").classList.add("hidden");
+  document.getElementById("loginScreen").classList.remove("hidden");
   document.getElementById("passwordInput").value = "";
 }
 
 async function tryLogin() {
   const password = document.getElementById("passwordInput").value;
-  document.getElementById("loginError").style.display = "none";
+  document.getElementById("loginError").classList.add("hidden");
   try {
     const res = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
@@ -24,14 +24,14 @@ async function tryLogin() {
     if (!res.ok) {
       const errEl = document.getElementById("loginError");
       errEl.textContent = res.status === 429 ? "Too many attempts. Please wait." : "Incorrect password.";
-      errEl.style.display = "block";
+      errEl.classList.remove("hidden");
       return;
     }
     const { token } = await res.json();
     sessionStorage.setItem("auth_token", token);
     showMain();
   } catch {
-    document.getElementById("loginError").style.display = "block";
+    document.getElementById("loginError").classList.remove("hidden");
   }
 }
 
@@ -62,7 +62,7 @@ let startTime = null;
 fileInput.addEventListener("change", () => {
   preview.innerHTML = "";
   resultsEl.innerHTML = "";
-  jobInfoEl.style.display = "none";
+  jobInfoEl.classList.add("hidden");
   jobInfoEl.innerHTML = "";
 
   selectedFile = fileInput.files[0];
@@ -121,7 +121,7 @@ processBtn.addEventListener("click", async () => {
     if (!data.images || data.images.length === 0) {
       statusEl.innerText = "서버 상태: 결과 없음";
       resultsEl.innerHTML = "<p>Inference 결과가 없습니다.</p>";
-      allDownloadBtn.style.display = "none";
+      allDownloadBtn.classList.add("hidden");
       return;
     }
 
@@ -129,7 +129,7 @@ processBtn.addEventListener("click", async () => {
     showJobInfo(data);
     currentImages = data.images;
     showResults(data.images);
-    allDownloadBtn.style.display = "inline";
+    allDownloadBtn.classList.remove("hidden");
   } catch (e) {
     stopTimer();
     statusEl.innerText = "서버 상태: 오류";
@@ -191,7 +191,7 @@ function showJobInfo(data) {
   cols.appendChild(makeCol(rightRows));
   wrapper.appendChild(cols);
   jobInfoEl.appendChild(wrapper);
-  jobInfoEl.style.display = "block";
+  jobInfoEl.classList.remove("hidden");
 }
 
 // 5️⃣ 타이머

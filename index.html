@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self'; img-src 'self' data: blob:; connect-src https://aiserv.sky.4pple.net; object-src 'none';" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://aiserv.sky.4pple.net; object-src 'none';" />
   <title>Private Inference Test</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -20,14 +20,14 @@
               <input id="passwordInput" class="password" type="password" placeholder="Password" autofocus autocomplete="current-password" />
               <button id="loginBtn" class="-button submit">Submit</button>
             </div>
-            <p id="loginError" class="error" style="display:none;">Incorrect password.</p>
+            <p id="loginError" class="error hidden">Incorrect password.</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div id="mainContent" style="display:none;">
+  <div id="mainContent" class="hidden">
   <h1>Inference Test</h1>
   <p id="version" class="version-text">Version: loading...</p>
   <p id="note" class="note-text">※ 이미지를 업로드하면 서버로 전송해 inference 결과를 생성합니다. 지원 이미지 크기: 640 x 640</p>
@@ -40,9 +40,9 @@
   <h2>Server Response</h2>
   <p id="timer">Elapsed: 0.0s</p>
   <p id="status">서버 상태: 대기 중</p>
-  <div id="jobInfo" style="display:none;"></div>
+  <div id="jobInfo" class="hidden"></div>
 
-  <h2>Results <a id="allDownloadBtn" href="#" style="display:none; font-size:0.85rem; font-weight:normal;">All Download</a></h2>
+  <h2>Results <a id="allDownloadBtn" href="#" class="hidden">All Download</a></h2>
   <div id="results"></div>
 
   </div><!-- mainContent -->
