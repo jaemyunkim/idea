@@ -67,6 +67,7 @@ const allDownloadBtn = document.getElementById("allDownloadBtn");
 const jobInfoEl = document.getElementById("jobInfo");
 
 let currentImages = [];
+let currentInputImage = null;
 
 let selectedFile = null;
 let timerInterval = null;
@@ -142,7 +143,8 @@ processBtn.addEventListener("click", async () => {
     statusEl.innerText = "서버 상태: 완료";
     showJobInfo(data);
     currentImages = data.images;
-    showResults(data.images);
+    currentInputImage = data.input_image ?? null;
+    showResults(data.images, currentInputImage);
     allDownloadBtn.classList.remove("hidden");
   } catch (e) {
     stopTimer();
@@ -232,7 +234,7 @@ const RESULT_LABELS = ["sketch layer", "color layer", "highlight layer", "shadow
 const RESULT_ORDER = [3, 0, 1, 2, 4]; // color, highlight, shadow, sketch, merge → sketch, color, highlight, shadow, result
 
 // 6️⃣ 결과 이미지 표시 + 다운로드
-function showResults(images) {
+function showResults(images, inputImage) {
   resultsEl.innerHTML = "";
   const ordered = RESULT_ORDER.map((i) => images[i] ?? null).filter(Boolean);
   images = ordered.length === images.length ? ordered : images;
@@ -259,6 +261,27 @@ function showResults(images) {
 
     resultsEl.appendChild(div);
   });
+
+  if (inputImage) {
+    const inputUrl = `data:${inputImage.mime_type};base64,${inputImage.data}`;
+    const div = document.createElement("div");
+    div.className = "result-item";
+
+    const img = document.createElement("img");
+    img.src = inputUrl;
+    img.alt = "input";
+
+    const a = document.createElement("a");
+    a.href = inputUrl;
+    a.download = "input.png";
+    a.innerText = "input image";
+
+    div.appendChild(img);
+    div.appendChild(document.createElement("br"));
+    div.appendChild(a);
+
+    resultsEl.appendChild(div);
+  }
 }
 
 allDownloadBtn.addEventListener("click", async (e) => {
@@ -268,6 +291,9 @@ allDownloadBtn.addEventListener("click", async (e) => {
     const filename = imgData.name ? imgData.name.split("/").pop() : `result_${idx}.png`;
     zip.file(filename, imgData.data, { base64: true });
   });
+  if (currentInputImage) {
+    zip.file("input.png", currentInputImage.data, { base64: true });
+  }
   const blob = await zip.generateAsync({ type: "blob" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
