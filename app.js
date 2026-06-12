@@ -259,6 +259,28 @@ function showResults(images) {
 
     resultsEl.appendChild(div);
   });
+
+  if (selectedFile) {
+    const inputUrl = URL.createObjectURL(selectedFile);
+    const div = document.createElement("div");
+    div.className = "result-item";
+
+    const img = document.createElement("img");
+    img.src = inputUrl;
+    img.alt = "input";
+    img.className = "result-input";
+
+    const a = document.createElement("a");
+    a.href = inputUrl;
+    a.download = selectedFile.name;
+    a.innerText = "input";
+
+    div.appendChild(img);
+    div.appendChild(document.createElement("br"));
+    div.appendChild(a);
+
+    resultsEl.appendChild(div);
+  }
 }
 
 allDownloadBtn.addEventListener("click", async (e) => {
@@ -268,6 +290,10 @@ allDownloadBtn.addEventListener("click", async (e) => {
     const filename = imgData.name ? imgData.name.split("/").pop() : `result_${idx}.png`;
     zip.file(filename, imgData.data, { base64: true });
   });
+  if (selectedFile) {
+    const buf = await selectedFile.arrayBuffer();
+    zip.file(`input_${selectedFile.name}`, buf);
+  }
   const blob = await zip.generateAsync({ type: "blob" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);

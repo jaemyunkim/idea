@@ -139,6 +139,13 @@ body {
   border: 1px solid #ccc;
 }
 
+#results img.result-input {
+  width: 300px;
+  height: 300px;
+  object-fit: contain;
+  background: #f0f0f0;
+}
+
 .version-text {
   font-size: 0.9rem;
   color: #666;
